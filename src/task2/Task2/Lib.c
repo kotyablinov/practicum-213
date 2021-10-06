@@ -7,23 +7,23 @@
 
 int addMatrixes(int numberRows1, int numberColumns1, int numberRows2, int numberColumns2, int numberRows3, int numberColumns3, double* firstCellMatrix1, double* firstCellMatrix2, double* firstCellResult)
 {
-	int i, j;
+	int currentRow, currentColumn;
 	bool flagOver = true;
 	long double sum;
 	if ((numberRows1 == numberRows2) && (numberColumns1 == numberColumns2))
 	{
 		if ((numberRows1 == numberRows3) && (numberColumns1 == numberColumns3))
 		{
-			for (i = 0; i < numberRows1; i++)
+			for (currentRow = 0; currentRow < numberRows1; currentRow++)
 			{
-				for (j = 0; j < numberColumns1; j++)
+				for (currentColumn = 0; currentColumn < numberColumns1; currentColumn++)
 				{
-					sum = *((firstCellMatrix1 + i * numberColumns1) + j) + *((firstCellMatrix2 + i * numberColumns1) + j);
+					sum = *((firstCellMatrix1 + currentRow * numberColumns1) + currentColumn) + *((firstCellMatrix2 + currentRow * numberColumns1) + currentColumn);
 					if ((sum < -1.7E-308) || (sum > 1.7E+308))
 					{
 						flagOver = false;
 					}
-					*((firstCellResult + i * numberColumns1) + j) = *((firstCellMatrix1 + i * numberColumns1) + j) + *((firstCellMatrix2 + i * numberColumns1) + j);
+					*((firstCellResult + currentRow * numberColumns1) + currentColumn) = *((firstCellMatrix1 + currentRow * numberColumns1) + currentColumn) + *((firstCellMatrix2 + currentRow * numberColumns1) + currentColumn);
 				}
 			}
 			if (flagOver)
@@ -49,21 +49,21 @@ int addMatrixes(int numberRows1, int numberColumns1, int numberRows2, int number
 
 int multMatrixNum(int numberRows1, int numberColumns1, int numberRows2, int numberColumns2, double* firstCellMatrix, double* firstCellResult, double multiplier)
 {
-	int i, j;
+	int currentRow, currentColumn;
 	bool flagOver = true;
 	long double cell;
 	if ((numberRows1 == numberRows2) && (numberColumns1 == numberColumns2))
 	{
-		for (i = 0; i < numberRows1; i++)
+		for (currentRow = 0; currentRow < numberRows1; currentRow++)
 		{
-			for (j = 0; j < numberColumns1; j++)
+			for (currentColumn = 0; currentColumn < numberColumns1; currentColumn++)
 			{
-				cell = *((firstCellMatrix + i * numberColumns1) + j) * multiplier;
+				cell = *((firstCellMatrix + currentRow * numberColumns1) + currentColumn) * multiplier;
 				if ((cell < -1.7E-308) || (cell > 1.7E+308))
 				{
 					flagOver = false;
 				}
-				*((firstCellResult + i * numberColumns1) + j) = *((firstCellMatrix + i * numberColumns1) + j) * multiplier;
+				*((firstCellResult + currentRow * numberColumns1) + currentColumn) = *((firstCellMatrix + currentRow * numberColumns1) + currentColumn) * multiplier;
 			}
 		}
 		if (flagOver)
@@ -83,30 +83,30 @@ int multMatrixNum(int numberRows1, int numberColumns1, int numberRows2, int numb
 
 int multMatrixes(int numberRows1, int numberColumns1, int numberRows2, int numberColumns2, int numberRows3, int numberColumns3, double* firstCellMatrix1, double* firstCellMatrix2, double* firstCellResult)
 {
-	int i, j, k = 0;
+	int currentRow, currentColumn, multiplierIndex = 0;
 	bool flagOver = true;
 	long double sum;
 	if (numberColumns1 == numberRows2)
 	{
 		if ((numberRows1 == numberRows3) && (numberColumns2 == numberColumns3))
 		{
-			for (i = 0; i < numberRows1; i++)
+			for (currentRow = 0; currentRow < numberRows1; currentRow++)
 			{
-				for (j = 0; j < numberColumns2; j++)
+				for (currentColumn = 0; currentColumn < numberColumns2; currentColumn++)
 				{
 					sum = 0;
-					for (k = 0; k < numberColumns1; k++)
+					for (multiplierIndex = 0; multiplierIndex < numberColumns1; multiplierIndex++)
 					{
-						sum += *((firstCellMatrix1 + i * numberColumns1) + k) * *((firstCellMatrix2 + k * numberColumns2) + j);
+						sum += *((firstCellMatrix1 + currentRow * numberColumns1) + multiplierIndex) * *((firstCellMatrix2 + multiplierIndex * numberColumns2) + currentColumn);
 					}
 					if ((sum < -1.7E-308) || (sum > 1.7E+308))
 					{
 						flagOver = false;
 					}
-					*((firstCellResult + i * numberColumns3) + j) = 0;
-					for (k = 0; k < numberColumns1; k++)
+					*((firstCellResult + currentRow * numberColumns3) + currentColumn) = 0;
+					for (multiplierIndex = 0; multiplierIndex < numberColumns1; multiplierIndex++)
 					{
-						*((firstCellResult + i * numberColumns3) + j) += *((firstCellMatrix1 + i * numberColumns1) + k) * *((firstCellMatrix2 + k * numberColumns2) + j);
+						*((firstCellResult + currentRow * numberColumns3) + currentColumn) += *((firstCellMatrix1 + currentRow * numberColumns1) + multiplierIndex) * *((firstCellMatrix2 + multiplierIndex * numberColumns2) + currentColumn);
 					}
 				}
 			}
@@ -131,95 +131,104 @@ int multMatrixes(int numberRows1, int numberColumns1, int numberRows2, int numbe
 	}
 }
 
-int inputMatrix(int numberRows, int numberColumns, double* firstCellMatrix)
+void inputMatrix(int numberRows, int numberColumns, double* firstCellMatrix)
 {
-	int i, j;
+	int currentRow, currentColumn;
 
-	for (i = 0; i < numberRows; i++)
+	for (currentRow = 0; currentRow < numberRows; currentRow++)
 	{
-		for (j = 0; j < numberColumns; j++)
+		for (currentColumn = 0; currentColumn < numberColumns; currentColumn++)
 		{
 			double character;
 			scanf("%lf", &character);
-			*((firstCellMatrix + i * numberColumns) + j) = character;
+			*((firstCellMatrix + currentRow * numberColumns) + currentColumn) = character;
 		}
 	}
-	return 0;
 }
 
-int outputMatrix(int numberRows, int numberColumns, double* firstCellMatrix)
+void outputMatrix(int numberRows, int numberColumns, double* firstCellMatrix)
 {
-	int i, j;
-	for (i = 0; i < numberRows; i++)
+	int currentRow, currentColumn;
+	for (currentRow = 0; currentRow < numberRows; currentRow++)
 	{
-		for (j = 0; j < numberColumns; j++)
+		for (currentColumn = 0; currentColumn < numberColumns; currentColumn++)
 		{
-			printf(" %*f", 10, *((firstCellMatrix + i * numberColumns) + j));
+			printf(" %*f", 10, *((firstCellMatrix + currentRow * numberColumns) + currentColumn));
 		}
 		printf("\n");
 	}
-	return 0;
 }
 
-void swapRowsDeterm(int numberColumns, int i, int j, double* firstCellMatrix)
+void swapRowsDeterm(int numberColumns, int firstRow, int secondRow, double* firstCellMatrix)
 {
-	double current;
-	int k;
-	for (k = 0; k < numberColumns; k++)
+	double currentRow;
+	for (int columnIndex = 0; columnIndex < numberColumns; columnIndex++)
 	{
-		current = *((firstCellMatrix + i * numberColumns) + k);
-		*((firstCellMatrix + i * numberColumns) + k) = *((firstCellMatrix + j * numberColumns) + k);
-		*((firstCellMatrix + j * numberColumns) + k) = current;
+		currentRow = *((firstCellMatrix + firstRow * numberColumns) + columnIndex);
+		*((firstCellMatrix + firstRow * numberColumns) + columnIndex) = *((firstCellMatrix + secondRow * numberColumns) + columnIndex);
+		*((firstCellMatrix + secondRow * numberColumns) + columnIndex) = currentRow;
 	}
 }
 
-int determMatrix(int numberRows, int numberColumns, double* firstCellMatrix, double* determinant)
+int checkBeforeMatrixDeterminant(int numberRows, int numberColumns)
 {
-	int i, j;
-	double EPS = 1E-9;
-	*determinant = 1;
+	int currentRow, currentColumn;
 	if (numberRows == numberColumns)
 	{
-		for (i = 0; i < numberRows; ++i)
-		{
-			int k = i;
-			for (j = i + 1; j < numberRows; ++j)
-			{
-				if (fabs(*((firstCellMatrix + j * numberColumns) + i)) > fabs(*((firstCellMatrix + k * numberColumns) + i)))
-				{
-					k = j;
-				}
-			}
-			if (fabs(*((firstCellMatrix + k * numberColumns) + i)) < EPS)
-			{
-				*determinant = 0;
-				break;
-			}
-			swapRowsDeterm(numberColumns, i, k, firstCellMatrix);
-			if (i != k)
-			{
-				*determinant = -1 * *determinant;
-			}
-			*determinant *= *((firstCellMatrix + i * numberColumns) + i);
-			for (j = i + 1; j < numberRows; ++j)
-			{
-				*((firstCellMatrix + i * numberColumns) + j) /= *((firstCellMatrix + i * numberColumns) + i);
-			}
-			for (j = 0; j < numberRows; ++j)
-			{
-				if (j != i && fabs(*((firstCellMatrix + j * numberColumns) + i)) > EPS)
-				{
-					for (k = i + 1; k < numberRows; ++k)
-					{
-						*((firstCellMatrix + j * numberColumns) + k) -= *((firstCellMatrix + i * numberColumns) + k) * *((firstCellMatrix + j * numberColumns) + i);
-					}
-				}
-			}
-		}
 		return 0;
 	}
 	else
 	{
 		return -1;
 	}
+}
+
+double getMatrixDeterminant(int numberRows, int numberColumns, double* firstCellMatrix, int* error)
+{
+	int currentRow, currentColumn;
+	double eps = 1E-9;
+
+	*error = checkBeforeMatrixDeterminant(numberRows, numberColumns);
+	if (*error != 0)
+	{		
+		return 0;
+	}
+	double determinant = 1;
+	for (currentRow = 0; currentRow < numberRows; ++currentRow)
+	{
+		int transitionIndex = currentRow;
+		for (currentColumn = currentRow + 1; currentColumn < numberRows; ++currentColumn)
+		{
+			if (fabs(*((firstCellMatrix + currentColumn * numberColumns) + currentRow)) > fabs(*((firstCellMatrix + transitionIndex * numberColumns) + currentRow)))
+			{
+				transitionIndex = currentColumn;
+			}
+		}
+		if (fabs(*((firstCellMatrix + transitionIndex * numberColumns) + currentRow)) < eps)
+		{
+			determinant = 0;
+			break;
+		}
+		swapRowsDeterm(numberColumns, currentRow, transitionIndex, firstCellMatrix);
+		if (currentRow != transitionIndex)
+		{
+			determinant = -1 * determinant;
+		}
+		determinant *= *((firstCellMatrix + currentRow * numberColumns) + currentRow);
+		for (currentColumn = currentRow + 1; currentColumn < numberRows; ++currentColumn)
+		{
+			*((firstCellMatrix + currentRow * numberColumns) + currentColumn) /= *((firstCellMatrix + currentRow * numberColumns) + currentRow);
+		}
+		for (currentColumn = 0; currentColumn < numberRows; ++currentColumn)
+		{
+			if (currentColumn != currentRow && fabs(*((firstCellMatrix + currentColumn * numberColumns) + currentRow)) > eps)
+			{
+				for (transitionIndex = currentRow + 1; transitionIndex < numberRows; ++transitionIndex)
+				{
+					*((firstCellMatrix + currentColumn * numberColumns) + transitionIndex) -= *((firstCellMatrix + currentRow * numberColumns) + transitionIndex) * *((firstCellMatrix + currentColumn * numberColumns) + currentRow);
+				}
+			}
+		}
+	}
+	return determinant;
 }

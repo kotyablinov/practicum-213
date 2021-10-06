@@ -1,88 +1,95 @@
-#define _CRT_SECURE_NO_WARNINGS
-#define N 3 // количество строк
-#define M 3 // количество столбцов
+#define ROWS 3 // количество строк
+#define COLUMNS 3 // количество столбцов
 
-#define N1 3 // количество строк 1 матрицы
-#define M1 3 // количество столбцов 1 матрицы
+#define ROWS1 3 // количество строк 1 матрицы
+#define COLUMNS1 3 // количество столбцов 1 матрицы
 
-#define N2 3 // количество строк 2 матрицы
-#define M2 3 // количество столбцов 2 матрицы
+#define ROWS2 3 // количество строк 2 матрицы
+#define COLUMNS2 3 // количество столбцов 2 матрицы
 
-#define MULTIP 2.5 // множитель
+#define ROWSRESULT 3 // количество строк результирующей матрицы
+#define COLUMNSRESULT 3 // количество столбцов результирующей матрицы
+
+#define MULTIPLIER 2.5 // множитель
 
 #include "Lib.h"
 
 /// <summary>
-/// Пример подсчета значения определителя матрицы.
+/// Пример работы функции вычисления определителя матрицы в программе.
 /// </summary>
-void exampleDeterminant()
+void programExampleDeterminant(double matrix1[ROWS][COLUMNS])
 {
-	double matrix1[N][M];
-	double determ = 0;
 	printf("Matrix\n");
-	inputMatrix(N, M, (double*)matrix1);
-	determMatrix(N, M, (double*)matrix1, &determ);
-	printf("%lf\n", determ);
+	inputMatrix(ROWS, COLUMNS, (double*)matrix1);
+	int error = 0;
+	double determinant = getMatrixDeterminant(ROWS, COLUMNS, (double*)matrix1, &error);
+
+	if (error == 0)
+	{
+		printf("%lf\n", determinant);
+	}
+	else
+	{
+		printf("Argument exception: sizes of matrix are different.");
+	}
 }
 
 /// <summary>
-/// Пример умножения матрицы на число.
+/// Пример работы функции умножения матрицы на число в программе.
 /// </summary>
-void exampleMultMatrixNum()
+void programExampleMultMatrixNumber(double matrix[ROWS1][COLUMNS1], double resultMatrix[ROWS1][COLUMNS2])
 {
-	double matrix[N][M];
-	double resultMatrix[N][M];
-	inputMatrix(N, M, (double*)matrix);
-	multMatrixNum(N, M, N, M, (double*)matrix, (double*)resultMatrix, MULTIP);
-	outputMatrix(N, M, (double*)matrix);
-	outputMatrix(N, M, (double*)resultMatrix);
+	inputMatrix(ROWS, COLUMNS, (double*)matrix);
+	multMatrixNum(ROWS, COLUMNS, ROWSRESULT, COLUMNSRESULT, (double*)matrix, (double*)resultMatrix, MULTIPLIER);
+	outputMatrix(ROWS, COLUMNS, (double*)matrix);
+	outputMatrix(ROWSRESULT, COLUMNSRESULT, (double*)resultMatrix);
 }
 
 /// <summary>
-/// Пример проверки работы суммирования матриц.
+/// Пример проверки работы функции суммирования матриц в программе.
 /// </summary>
-void exampleAddMatrix()
+void programExampleAddMatrix(double matrix1[ROWS1][COLUMNS1], double matrix2[ROWS2][COLUMNS2], double resultMatrix[ROWS1][COLUMNS2])
 {
-	double matrix1[N][M];
-	double matrix2[N][M];
-	double resultMatrix[N][M];
 	printf("First matrix\n");
-	inputMatrix(N, M, (double*)matrix1);
+	inputMatrix(ROWS1, COLUMNS1, (double*)matrix1);
 	printf("Second matrix\n");
-	inputMatrix(N, M, (double*)matrix2);
-	addMatrixes(N, M, N, M, N, M, (double*)matrix1, (double*)matrix2, (double*)resultMatrix);
+	inputMatrix(ROWS2, COLUMNS2, (double*)matrix2);
+	addMatrixes(ROWS1, COLUMNS1, ROWS2, COLUMNS2, ROWSRESULT, COLUMNSRESULT, (double*)matrix1, (double*)matrix2, (double*)resultMatrix);
 	printf("First matrix\n");
-	outputMatrix(N, M, (double*)matrix1);
+	outputMatrix(ROWS1, COLUMNS1, (double*)matrix1);
 	printf("Second matrix\n");
-	outputMatrix(N, M, (double*)matrix2);
+	outputMatrix(ROWS2, COLUMNS2, (double*)matrix2);
 	printf("Resulted matrix\n");
-	outputMatrix(N, M, (double*)resultMatrix);
+	outputMatrix(ROWSRESULT, COLUMNSRESULT, (double*)resultMatrix);
 }
 
 /// <summary>
-/// Пример проверки работы суммирования матриц.
+/// Пример проверки работы функции суммирования матриц в программе.
 /// </summary>
-void exampleMultMatrixes()
+void programExampleMultMatrixes(double matrix1[ROWS1][COLUMNS1],double matrix2[ROWS2][COLUMNS2],double resultMatrix[ROWS1][COLUMNS2])
 {
-	double matrix1[N1][M1];
-	double matrix2[N2][M2];
-	double resultMatrix[N1][M2];
 	printf("First matrix\n");
-	inputMatrix(N1, M1, (double*)matrix1);
+	inputMatrix(ROWS1, COLUMNS1, (double*)matrix1);
 	printf("Second matrix\n");
-	inputMatrix(N2, M2, (double*)matrix2);
-	multMatrixes(N1, M1, N2, M2, N1, M2, (double*)matrix1, (double*)matrix2, (double*)resultMatrix);
+	inputMatrix(ROWS2, COLUMNS2, (double*)matrix2);
+	multMatrixes(ROWS1, COLUMNS1, ROWS2, COLUMNS2, ROWS1, COLUMNS2, (double*)matrix1, (double*)matrix2, (double*)resultMatrix);
 	printf("First matrix\n");
-	outputMatrix(N1, M1, (double*)matrix1);
+	outputMatrix(ROWS1, COLUMNS1, (double*)matrix1);
 	printf("Second matrix\n");
-	outputMatrix(N2, M2, (double*)matrix2);
+	outputMatrix(ROWS2, COLUMNS2, (double*)matrix2);
 	printf("Resulted matrix\n");
-	outputMatrix(N1, M2, (double*)resultMatrix);
-	return 0;
+	outputMatrix(ROWS1, COLUMNS2, (double*)resultMatrix);
 }
 
 int main()
 {
-	exampleDeterminant();
+	double matrix[ROWS][COLUMNS];
+	double matrix1[ROWS1][COLUMNS1];
+	double matrix2[ROWS2][COLUMNS2];
+	double resultMatrix[ROWS1][COLUMNS2];
+	programExampleDeterminant(matrix1);
+	//programExampleMultMatrixes(matrix1, matrix2, resultMatrix);
+	//programExampleAddMatrix(matrix1, matrix2, resultMatrix);
+	//programExampleMultMatrixNumber(matrix1, resultMatrix);
 	return 0;
 }
