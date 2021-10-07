@@ -186,7 +186,7 @@ int checkBeforeMatrixDeterminant(int numberRows, int numberColumns)
 double getMatrixDeterminant(int numberRows, int numberColumns, double* firstCellMatrix, int* error)
 {
 	int currentRow, currentColumn;
-	double eps = 1E-9;
+	double epsilon = 1E-9; // очень маленькое значение. Используется из-за наличия double и float переменных при вычислениях 
 
 	*error = checkBeforeMatrixDeterminant(numberRows, numberColumns);
 	if (*error != 0)
@@ -204,7 +204,7 @@ double getMatrixDeterminant(int numberRows, int numberColumns, double* firstCell
 				transitionIndex = currentColumn;
 			}
 		}
-		if (fabs(*((firstCellMatrix + transitionIndex * numberColumns) + currentRow)) < eps)
+		if (fabs(*((firstCellMatrix + transitionIndex * numberColumns) + currentRow)) < epsilon)
 		{
 			determinant = 0;
 			break;
@@ -221,7 +221,7 @@ double getMatrixDeterminant(int numberRows, int numberColumns, double* firstCell
 		}
 		for (currentColumn = 0; currentColumn < numberRows; ++currentColumn)
 		{
-			if (currentColumn != currentRow && fabs(*((firstCellMatrix + currentColumn * numberColumns) + currentRow)) > eps)
+			if (currentColumn != currentRow && fabs(*((firstCellMatrix + currentColumn * numberColumns) + currentRow)) > epsilon)
 			{
 				for (transitionIndex = currentRow + 1; transitionIndex < numberRows; ++transitionIndex)
 				{
