@@ -1,16 +1,16 @@
-#define ROWS 3 // количество строк
-#define COLUMNS 3 // количество столбцов
+const int ROWS=3; // количество строк
+const int COLUMNS=3; // количество столбцов
 
-#define ROWS1 3 // количество строк 1 матрицы
-#define COLUMNS1 3 // количество столбцов 1 матрицы
+const int ROWS1=3; // количество строк 1 матрицы
+const int COLUMNS1=3; // количество столбцов 1 матрицы
 
-#define ROWS2 3 // количество строк 2 матрицы
-#define COLUMNS2 3 // количество столбцов 2 матрицы
+const int ROWS2=3; // количество строк 2 матрицы
+const int COLUMNS2=3; // количество столбцов 2 матрицы
 
-#define ROWSRESULT 3 // количество строк результирующей матрицы
-#define COLUMNSRESULT 3 // количество столбцов результирующей матрицы
+const int ROWSRESULT=3; // количество строк результирующей матрицы
+const int COLUMNSRESULT=3; // количество столбцов результирующей матрицы
 
-#define MULTIPLIER 2.5 // множитель
+const double MULTIPLIER=2.5; // множитель
 
 #include "Lib.h"
 
