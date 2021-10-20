@@ -4,10 +4,9 @@
 #include <stdlib.h>
 
 struct list {
-	char* s;
+	char* string;
 	struct list* next;
 };
-
 
 void sortList(struct list** firstListPointerToPointer, struct list* inputListPointer)
 {
@@ -16,7 +15,7 @@ void sortList(struct list** firstListPointerToPointer, struct list* inputListPoi
 	currentListPointer = firstListPointer;
 	bool isPut;
 	// если надо вставить в начале
-	if (strcmp(inputListPointer->s, firstListPointer->s) < 0)
+	if (strcmp(inputListPointer->string, firstListPointer->string) < 0)
 	{
 		inputListPointer->next = firstListPointer;
 		firstListPointer = inputListPointer;
@@ -26,7 +25,7 @@ void sortList(struct list** firstListPointerToPointer, struct list* inputListPoi
 	// s1 s2 и вставляем s между ними если s1<=s и s2 >= s
 	while (currentListPointer->next != NULL)
 	{
-		isPut = (strcmp(inputListPointer->s, currentListPointer->s) >= 0) && (strcmp(inputListPointer->s, (currentListPointer->next)->s) <= 0);
+		isPut = (strcmp(inputListPointer->string, currentListPointer->string) >= 0) && (strcmp(inputListPointer->string, (currentListPointer->next)->string) <= 0);
 		if (isPut)
 		{
 			inputListPointer->next = currentListPointer->next;
@@ -47,7 +46,7 @@ void printList(struct list* firstListPointer)
 	currentListPointer = firstListPointer;
 	while (currentListPointer != NULL)
 	{
-		printf("%s\n", currentListPointer->s);
+		printf("%s\n", currentListPointer->string);
 		currentListPointer = currentListPointer->next;
 	}
 	return;
@@ -60,12 +59,11 @@ void cleanList(struct list** firstListPointer)
 	{
 		currentListPointer = *firstListPointer;
 		*firstListPointer = (*firstListPointer)->next;
-		free(currentListPointer->s);
+		free(currentListPointer->string);
 		free(currentListPointer);
 	}
 	return;
 }
-
 
 int main()
 {
@@ -74,9 +72,6 @@ int main()
 	char* currentString = NULL;
 	struct list* inputListPointer, * firstListPointer;
 	char inputSymbol;
-
-
-
 	while (againFlag == 'y')
 	{
 		printf("Input sequence:\n");
@@ -85,7 +80,6 @@ int main()
 		while (inputSymbol != EOF)
 		{
 			stringNumber += 1;
-
 			//сюда ввод строки
 			maxStringSize = 1;
 			currentStringSize = 0;
@@ -121,7 +115,6 @@ int main()
 			{
 				inputSymbol = getchar();
 			}
-
 			if (stringNumber == 1)
 			{
 				firstListPointer = (struct list*)malloc(sizeof(struct list));
@@ -130,7 +123,7 @@ int main()
 					printf("Allocation error.\n");
 					exit(1);
 				}
-				firstListPointer->s = currentString;
+				firstListPointer->string = currentString;
 				firstListPointer->next = NULL;
 			}
 			else
@@ -141,15 +134,12 @@ int main()
 					printf("Allocation error.\n");
 					exit(1);
 				}
-				inputListPointer->s = currentString;
+				inputListPointer->string = currentString;
 				sortList(&firstListPointer, inputListPointer);
 			}
 		}
-
 		printList(firstListPointer);
 		cleanList(&firstListPointer);
-
-
 		printf("Do you want again? y/n\n");
 		againFlag = getchar();
 		inputSymbol = getchar();
