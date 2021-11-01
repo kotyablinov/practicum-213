@@ -2,8 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct Lines
-{
+struct Lines {
 	long int* start;
 	int length;
 };
@@ -17,30 +16,25 @@ void main(int argc, char* argv[])
 	int linesNumber, currentLength, maxLength, temporalLength, firstIndexSort, secondIndexSort, currentString, currentCharIndex;
 	long int* temporalStart;
 
-	if (argc < 3)
-	{
+	if (argc < 3) {
 		printf("Incorrect arguments.\n");
 		return;
 	}
 
 	currentFile = fopen(argv[1], "r");
-	if (currentFile == NULL)
-	{
+	if (currentFile == NULL) {
 		printf("Wrong path of the file.\n");
 		return;
 	}
 	currentChar = fgetc(currentFile);
 
-	//Ó·‡·ÓÚÍ‡ ÔÛÒÚÓ„Ó Ù‡ÈÎ‡
-	if (currentChar != EOF)
-	{
+	//–æ–±—Ä–∞–±–æ—Ç–∫–∞ –ø—É—Å—Ç–æ–≥–æ —Ñ–∞–π–ª–∞
+	if (currentChar != EOF) {
 		fileLines = (struct Lines*)malloc(sizeof(struct Lines));
 		fileLines[0].start = 0;
 		currentLength = 0;
 		linesNumber = 1;
-	}
-	else
-	{
+	} else {
 		fclose(currentFile);
 		printf("File is empty.\n");
 		return;
@@ -48,33 +42,25 @@ void main(int argc, char* argv[])
 	outputFile = fopen("output.txt", "w");
 	maxLength = strtol(argv[2], NULL, 10);
 
-	//ÔÓÒÚ‡‚ÎˇÂÏ ÛÍ‡Á‡ÚÂÎË ‚ Ù‡ÈÎÂ Ì‡ Ì‡˜‡Î‡ ÒÚÓÍ
-	while (currentChar != EOF)
-	{
-		if (currentChar == '\n')
-		{
+	//–ø—Ä–æ—Å—Ç–∞–≤–ª—è–µ–º —É–∫–∞–∑–∞—Ç–µ–ª–∏ –≤ —Ñ–∞–π–ª–µ –Ω–∞ –Ω–∞—á–∞–ª–∞ —Å—Ç—Ä–æ–∫
+	while (currentChar != EOF) {
+		if (currentChar == '\n') {
 			fileLines[linesNumber - 1].length = currentLength;
 			currentLength = 0;
 			linesNumber += 1;
 			fileLines = (struct Lines*)realloc(fileLines, linesNumber * sizeof(struct Lines));
 			fileLines[linesNumber - 1].start = ftell(currentFile);
-		}
-		else
-		{
+		} else {
 			currentLength += 1;
 		}
-
 		currentChar = fgetc(currentFile);
 	}
 	fileLines[linesNumber - 1].length = currentLength;
 
-	//ÒÓÚËÛÂÏ ÔÓ ‰ÎËÌÂ
-	for (firstIndexSort = 0; firstIndexSort < linesNumber - 1; firstIndexSort++)
-	{
-		for (secondIndexSort = 0; secondIndexSort < linesNumber - firstIndexSort - 1; secondIndexSort++)
-		{
-			if (fileLines[secondIndexSort].length > fileLines[secondIndexSort + 1].length)
-			{
+	//—Å–æ—Ä—Ç–∏—Ä—É–µ–º –ø–æ –¥–ª–∏–Ω–µ
+	for (firstIndexSort = 0; firstIndexSort < linesNumber - 1; firstIndexSort++) {
+		for (secondIndexSort = 0; secondIndexSort < linesNumber - firstIndexSort - 1; secondIndexSort++) {
+			if (fileLines[secondIndexSort].length > fileLines[secondIndexSort + 1].length) {
 				temporalLength = fileLines[secondIndexSort].length;
 				temporalStart = fileLines[secondIndexSort].start;
 				fileLines[secondIndexSort].length = fileLines[secondIndexSort + 1].length;
@@ -85,18 +71,15 @@ void main(int argc, char* argv[])
 		}
 	}
 
-	for (currentString = 0; currentString < linesNumber; currentString++)
-	{
+	for (currentString = 0; currentString < linesNumber; currentString++) {
 		fseek(currentFile, fileLines[currentString].start, SEEK_SET);
-		for (currentCharIndex = 0; currentCharIndex < fileLines[currentString].length; currentCharIndex++)
-		{
+		for (currentCharIndex = 0; currentCharIndex < fileLines[currentString].length; currentCharIndex++) {
 			putc(fgetc(currentFile), outputFile);
 		}
 		putc('\n', outputFile);
 	}
 
-	if (fileLines[linesNumber].length > maxLength)
-	{
+	if (fileLines[linesNumber].length > maxLength) {
 		printf("The file contains lines longer than the specified length.\n");
 	}
 
