@@ -66,6 +66,9 @@ int main() {
       isOneSymbol = (checkChar == ';') || (checkChar == '<') ||
                     (checkChar == '(') || (checkChar == ')');
       if (firstQuote == currentPosition) {
+        if (wordLength != 1) {
+          completeWord(&wordLength, &stringNumber, &currentWord, &stringList);
+        }
         if (lastQuote - firstQuote > 1) {
           currentWord = (char*)realloc(currentWord,
                                        (lastQuote - firstQuote) * sizeof(char));
