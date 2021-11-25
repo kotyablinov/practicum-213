@@ -1,4 +1,5 @@
 #include <signal.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,13 +18,11 @@ void executePathCommand(char ***pointerToStringList,
 
   pid_t childPid = fork();
   if (childPid == 0) {
-    // child
     int i = execvp(stringList[0], stringList);
     printf("%s\n", "Command failed with an error.");
   } else {
-    // parent
     wait(0);
-    kill(childPid, SIGKILL);  // (x__x)
+    kill(childPid, SIGKILL);
   }
 
   *pointerToStringList = stringList;
@@ -33,7 +32,9 @@ void executePathCommand(char ***pointerToStringList,
 void executeChangeDirectory(char ***pointerToStringList,
                             int *pointerToStringNumber) {
   int numberArguments = (*pointerToStringNumber) - 2;
-  if ((numberArguments == 0) || (strcmp((*pointerToStringList)[1], "~") == 0)) {
+  bool isChangeToHome =
+      (numberArguments == 0) || (strcmp((*pointerToStringList)[1], "~") == 0);
+  if (isChangeToHome) {
     chdir(getenv("HOME"));
   } else if (numberArguments == 1) {
     int result = chdir((*pointerToStringList)[1]);

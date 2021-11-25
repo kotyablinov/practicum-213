@@ -22,44 +22,18 @@ void completeWord(int *pointerToWordLength, int *pointerToStringNumber,
   *pointerToStringNumber = stringNumber;
 }
 
-bool readLines(char ***pointerToStringList, int *pointerToStringNumber) {
-  char **stringList = NULL;
-  int stringNumber = 0;
+void parseLines(char *currentString, int characterNumber, int firstQuote,
+                int lastQuote, char ***pointerToStringList,
+                int *pointerToStringNumber) {
+  char **stringList = (char **)malloc(sizeof(char *));
+  int stringNumber = 1;
 
-  char *currentWord = NULL;
-  bool isNewWord, isDoubleSymbol, isOneSymbol;
-  int characterNumber, firstQuote, lastQuote, currentPosition, wordLength;
-
-  char *currentString = (char *)malloc(sizeof(char));
-  stringList = (char **)malloc(sizeof(char *));
-  stringNumber = 1;
-  characterNumber = 1;
-  firstQuote = -1;
-  lastQuote = -1;
-
-  char inputChar = getchar();
-  if (inputChar == EOF) {
-    return false;
-  }
-  //считываем всю строку
-  while ((inputChar != '\n') && (inputChar != EOF)) {
-    if (inputChar == '"') {
-      if (firstQuote == -1) {
-        firstQuote = characterNumber - 1;
-      }
-      lastQuote = characterNumber - 1;
-    }
-    currentString[characterNumber - 1] = inputChar;
-    characterNumber++;
-    currentString =
-        (char *)realloc(currentString, characterNumber * sizeof(char));
-    inputChar = getchar();
-  }
-  currentString[characterNumber - 1] = '\0';
   //обрабатываем строку
-  currentPosition = 0;
-  wordLength = 1;
-  currentWord = (char *)malloc(sizeof(char));
+  int currentPosition = 0;
+  int wordLength = 1;
+  char *currentWord = (char *)malloc(sizeof(char));
+  bool isNewWord, isDoubleSymbol, isOneSymbol;
+
   while (currentPosition < characterNumber - 1) {
     char checkChar = currentString[currentPosition];
     isNewWord = (checkChar == ' ') || (checkChar == '\"');
@@ -140,13 +114,46 @@ bool readLines(char ***pointerToStringList, int *pointerToStringNumber) {
   } else {
     free(currentWord);
   }
+  *pointerToStringList = stringList;
+  *pointerToStringNumber = stringNumber;
+}
+
+bool readLines(char ***pointerToStringList, int *pointerToStringNumber) {
+  int characterNumber, firstQuote, lastQuote;
+
+  char *currentString = (char *)malloc(sizeof(char));
+
+  characterNumber = 1;
+  firstQuote = -1;
+  lastQuote = -1;
+
+  char inputChar = getchar();
+  if (inputChar == EOF) {
+    return false;
+  }
+  //считываем всю строку
+  while ((inputChar != '\n') && (inputChar != EOF)) {
+    if (inputChar == '"') {
+      if (firstQuote == -1) {
+        firstQuote = characterNumber - 1;
+      }
+      lastQuote = characterNumber - 1;
+    }
+    currentString[characterNumber - 1] = inputChar;
+    characterNumber++;
+    currentString =
+        (char *)realloc(currentString, characterNumber * sizeof(char));
+    inputChar = getchar();
+  }
+  currentString[characterNumber - 1] = '\0';
+
+  parseLines(currentString, characterNumber, firstQuote, lastQuote,
+             pointerToStringList, pointerToStringNumber);
   free(currentString);
 
   if (inputChar == EOF) {
     return false;
   }
 
-  *pointerToStringList = stringList;
-  *pointerToStringNumber = stringNumber;
   return true;
 }
