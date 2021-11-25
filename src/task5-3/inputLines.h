@@ -1,0 +1,1 @@
+bool readLines(char*** pointerToStringList, int* pointerToStringNumber);
