@@ -1,0 +1,12 @@
+.vscode
+myshell
+a.out
+.idea
+cmake-build-debug*
+build
+out
+.vs
+task5-all.ChildProcessDbgSettings
+
+CMakeSettings.json
+tempfile-*
