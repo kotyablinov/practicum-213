@@ -1,7 +1,7 @@
 #ifndef EXECUTECOMMAND_H_
 #define EXECUTECOMMAND_H_
 
-int getNewTempFileDesc(char **pointerFileName, char **pointerToErrorMessage);
+int getNewTemporaryFileDescriptor(char **pointerFileName, char **pointerToErrorMessage);
 int removeFile(char *filename);
 
 int executeCommand(char ***pointerToStringList, int startCommand,

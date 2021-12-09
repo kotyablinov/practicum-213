@@ -8,13 +8,10 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#define READ_END 0
-#define WRITE_END 1
-
-int getNewTempFileDesc(char **pointerFileName, char **pointerToErrorMessage) {
+int getNewTemporaryFileDescriptor(char **pointerFileName, char **pointerToErrorMessage) {
   char filename[] = "tempfile-XXXXXX";
-  int fd;
-  if ((fd = mkstemp(filename)) == -1) {
+  int fileDescriptor =1;
+  if ((fileDescriptor = mkstemp(filename)) == -1) {
     *pointerToErrorMessage = "Failed to create a temporary file.";
     return EXIT_FAILURE;
   }
@@ -25,40 +22,40 @@ int getNewTempFileDesc(char **pointerFileName, char **pointerToErrorMessage) {
 
 int removeFile(char *filename) { return remove(filename); }
 
-int getWriteFileDesc(char *filename, bool isAppend,
+int getWriteFileDescriptor(char *filename, bool isAppend,
                      char **pointerToErrorMessage) {
-  int fd = -1;
+  int fileDescriptor = -1;
   if (filename) {
     if (isAppend) {
-      fd = open(filename, O_CREAT | O_APPEND, 0666);
+      fileDescriptor = open(filename, O_CREAT | O_APPEND, 0666);
     } else {
-      fd = open(filename, O_CREAT | O_WRONLY, 0666);
+      fileDescriptor = open(filename, O_CREAT | O_WRONLY, 0666);
     }
   }
-  if (filename == NULL || fd < 0) {
+  if (filename == NULL || fileDescriptor < 0) {
     *pointerToErrorMessage = "Could not open the file for writing";
     return EXIT_FAILURE;
   }
-  return fd;
+  return fileDescriptor;
 }
 
-int getReadFileDesc(char *filename, char **pointerToErrorMessage) {
-  int fd = EXIT_FAILURE;
+int getReadFileDescriptor(char *filename, char **pointerToErrorMessage) {
+  int fileDescriptor = EXIT_FAILURE;
   if (filename) {
-    fd = open(filename, O_RDONLY, 0666);
+    fileDescriptor = open(filename, O_RDONLY, 0666);
   }
-  if (filename == NULL || fd < 0) {
+  if (filename == NULL || fileDescriptor < 0) {
     *pointerToErrorMessage = "Could not open the file for writing";
     return EXIT_FAILURE;
   }
-  return fd;
+  return fileDescriptor;
 }
 
 int duplicateFileDescriptors(char *fileIn, char *fileOut, bool isAppendOut,
                              char **pointerToErrorMessage) {
   if (fileIn != NULL) {
-    int fileDescIn = getReadFileDesc(fileIn, pointerToErrorMessage);
-    if (dup2(fileDescIn, STDIN_FILENO) == -1) {
+    int fileDescriptorIn = getReadFileDescriptor(fileIn, pointerToErrorMessage);
+    if (dup2(fileDescriptorIn, STDIN_FILENO) == -1) {
       *pointerToErrorMessage =
           "Something went wrong when creating a duplicate file descriptor "
           "(STDIN).";
@@ -66,9 +63,9 @@ int duplicateFileDescriptors(char *fileIn, char *fileOut, bool isAppendOut,
     }
   }
   if (fileOut) {
-    int fileDescOut =
-        getWriteFileDesc(fileOut, isAppendOut, pointerToErrorMessage);
-    if (dup2(fileDescOut, STDOUT_FILENO) == -1) {
+    int fileDescriptorOut =
+        getWriteFileDescriptor(fileOut, isAppendOut, pointerToErrorMessage);
+    if (dup2(fileDescriptorOut, STDOUT_FILENO) == -1) {
       *pointerToErrorMessage =
           "Something went wrong when creating a duplicate file descriptor "
           "(STDOUT).";
@@ -142,8 +139,6 @@ int executeCommand(char ***pointerToStringList, int startCommand,
       exit(processStatus);
     } else {
       if (waitpid(pid, &status, 0) > 0) {
-        // closeTube(tubeIn);
-        // closeTube(tubeOut);
         if (WIFEXITED(status) && !WEXITSTATUS(status)) {
           return EXIT_SUCCESS;
         } else if (WIFEXITED(status) && WEXITSTATUS(status)) {

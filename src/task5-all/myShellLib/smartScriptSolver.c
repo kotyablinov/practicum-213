@@ -40,14 +40,14 @@ int pushChildScriptExecutionInNewProcess(char ***pointerToStringList,
     currentScript.endPosition--;
   }
 
-  int errorFd[2];  // "труба" для ошибок выполнения процесса
-  int currentLocationFd[2];  // "труба" для пути контекста
+  int errorFileDescriptor[2];
+  int currentLocationFileDescriptor[2];
 
-  pipe(errorFd);
-  pipe(currentLocationFd);
+  pipe(errorFileDescriptor);
+  pipe(currentLocationFileDescriptor);
 
   int pidNewProcess =
-      fork();  // создаём процесс для выполнения основного скрипта
+      fork();
   if (pidNewProcess < 0) {
     *pointerToErrorMessage =
         "Unfortunately, the attempt to create a process for executing the main "
@@ -55,8 +55,8 @@ int pushChildScriptExecutionInNewProcess(char ***pointerToStringList,
     return EXIT_FAILURE;
   } else if (pidNewProcess == 0) {
     // сын
-    close(errorFd[0]);
-    close(currentLocationFd[0]);
+    close(errorFileDescriptor[0]);
+    close(currentLocationFileDescriptor[0]);
 
     char *errorMessage = "";
     // выполнить скрипт
@@ -65,23 +65,21 @@ int pushChildScriptExecutionInNewProcess(char ***pointerToStringList,
                                    fileOut, isAppendOut, &errorMessage);
     // записали текущую ошибку
     if (code != 0) {
-      write(errorFd[1], errorMessage, strlen(errorMessage) * sizeof(char));
+      write(errorFileDescriptor[1], errorMessage, strlen(errorMessage) * sizeof(char));
     }
-    close(errorFd[1]);
+    close(errorFileDescriptor[1]);
 
     // записали текущий путь окружения
     char cwd[PATH_MAX];
     if (getcwd(cwd, sizeof(cwd)) != NULL) {
-      write(currentLocationFd[1], cwd, strlen(cwd) * sizeof(char));
+      write(currentLocationFileDescriptor[1], cwd, strlen(cwd) * sizeof(char));
     }
-    close(currentLocationFd[1]);
+    close(currentLocationFileDescriptor[1]);
 
     exit(code);
   } else {
-    close(errorFd[1]);
-    close(currentLocationFd[1]);
-    // closeTube(tubeIn);
-    // closeTube(tubeOut);
+    close(errorFileDescriptor[1]);
+    close(currentLocationFileDescriptor[1]);
 
     if (isBackgroundMode) {
       waitpid(-1, NULL, WNOHANG);
@@ -92,8 +90,8 @@ int pushChildScriptExecutionInNewProcess(char ***pointerToStringList,
         int bufferSize = 1024;
         char errorMessage[bufferSize];
         memset(errorMessage, 0, sizeof(errorMessage));
-        read(errorFd[0], errorMessage, sizeof(errorMessage));
-        close(errorFd[0]);
+        read(errorFileDescriptor[0], errorMessage, sizeof(errorMessage));
+        close(errorFileDescriptor[0]);
         *pointerToErrorMessage = errorMessage;
         return EXIT_FAILURE;
       }
@@ -101,11 +99,11 @@ int pushChildScriptExecutionInNewProcess(char ***pointerToStringList,
     // меняем текущий путь
     char pathOfContext[PATH_MAX];
     memset(pathOfContext, 0, sizeof(pathOfContext));
-    read(currentLocationFd[0], pathOfContext, sizeof(pathOfContext));
+    read(currentLocationFileDescriptor[0], pathOfContext, sizeof(pathOfContext));
     chdir(pathOfContext);
 
-    close(errorFd[0]);
-    close(currentLocationFd[0]);
+    close(errorFileDescriptor[0]);
+    close(currentLocationFileDescriptor[0]);
   }
 
   return EXIT_SUCCESS;
@@ -237,7 +235,7 @@ int findAndExecuteChildScripts(char ***pointerToStringList,
         }
         if (strcmp(commandAfterChildScript, "|") == 0) {
           childFileOut = NULL;
-          int fd = getNewTempFileDesc(&childFileOut, &previousErrorMessage);
+          int fd = getNewTemporaryFileDescriptor(&childFileOut, &previousErrorMessage);
           if (fd < 0) {
             isSkipCurrentChildScript = true;
             statusCodePrevious = fd;
