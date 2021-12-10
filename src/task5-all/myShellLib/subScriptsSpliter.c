@@ -78,8 +78,8 @@ int getSubScripts(char ***pointerToStringList, SUBSCRIPT currentScript,
         }
       }
     } else if (isFlowSplitter(currentWord)) {
+      stackCommandsNumber++;
       if (stackCommands == NULL) {
-        stackCommandsNumber++;
         if (stackCommands == NULL) {
           stackCommands = (char **)malloc(sizeof(char *));
         } else {

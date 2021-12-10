@@ -211,6 +211,7 @@ int findAndExecuteChildScripts(char ***pointerToStringList,
                        (strcmp(commandAfterChildScript, ">>") == 0);
         bool isRead = (strcmp(commandAfterChildScript, "<") == 0);
         if (isWrite || isRead) {
+          isSkipNextChildScript = true;
           if (cursorScripts + 1 >= childScriptsNumber) {
             *pointerToErrorMessage = "File name is missing.";
             freeScriptsAndCommands(childScripts, stackCommands, tempFiles,
