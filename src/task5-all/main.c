@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include "myShellLib/inputLines.h"
 #include "myShellLib/smartScriptSolver.h"
@@ -31,6 +32,7 @@ int main() {
       printf("MYSHELL > %s$ ", cwd);
       fflush(stdout);
     }
+    signal(SIGINT, SIG_IGN);
     isEOF = readLines(&stringList, &stringListNumber);
 
     SUBSCRIPT mainScript;
