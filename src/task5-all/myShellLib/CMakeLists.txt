@@ -1,0 +1,1 @@
+add_library(myShellLib executeCommand.c inputLines.c subScriptsSpliter.c smartScriptSolver.c)
