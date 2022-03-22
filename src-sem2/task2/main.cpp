@@ -3,83 +3,64 @@
 #include <iostream>
 using namespace std;
 
-template <typename T>
-class Matrix {
-   private:
+template <typename U>
+class AbstractMatrix {
+   protected:
+    static int numberOfMatrixes;
     int rows;
     int columns;
-    T **matrix;
-    static int numberOfMatrixes;
+    U **matrix;
 
-   public:
-    Matrix(int inputRows, int inputColumns) {
+    void set(const AbstractMatrix<U> &sourceMatrix) {
+        this->rows = sourceMatrix.rows;
+        this->columns = sourceMatrix.columns;
+        this->matrix = (U **)new U *[this->rows];
+
+        for (int currentRow = 0; currentRow < this->rows; currentRow++)
+            this->matrix[currentRow] = (U *)new U[this->columns];
+        for (int currentRow = 0; currentRow < this->rows; currentRow++)
+            for (int currentColumn = 0; currentColumn < this->columns; currentColumn++)
+                this->matrix[currentRow][currentColumn] = sourceMatrix.matrix[currentRow][currentColumn];
+    }
+
+    void clean() {
+        for (int currentRow = 0; currentRow < this->rows; currentRow++)
+            delete[] this->matrix[currentRow];
+        delete[] this->matrix;
+    }
+
+   protected:
+    AbstractMatrix() {
         numberOfMatrixes++;
+    }
+
+    AbstractMatrix(int inputRows, int inputColumns) : AbstractMatrix() {
         rows = inputRows;
         columns = inputColumns;
-        matrix = (T **)new T *[rows];
+        matrix = (U **)new U *[rows];
 
         for (int currentRow = 0; currentRow < rows; currentRow++)
-            matrix[currentRow] = (T *)new T[columns];
+            matrix[currentRow] = (U *)new U[columns];
         for (int currentRow = 0; currentRow < rows; currentRow++)
             for (int currentColumn = 0; currentColumn < columns; currentColumn++)
                 matrix[currentRow][currentColumn] = 0;
     }
 
-   private:
-    void set(const Matrix<T> &sourceMatrix) {
-        rows = sourceMatrix.rows;
-        columns = sourceMatrix.columns;
-        matrix = (T **)new T *[rows];
-
-        for (int currentRow = 0; currentRow < rows; currentRow++)
-            matrix[currentRow] = (T *)new T[columns];
-        for (int currentRow = 0; currentRow < rows; currentRow++)
-            for (int currentColumn = 0; currentColumn < columns; currentColumn++)
-                matrix[currentRow][currentColumn] = sourceMatrix.matrix[currentRow][currentColumn];
-    }
-
-   public:
-    Matrix(const Matrix<T> &sourceMatrix) {
-        numberOfMatrixes++;
+    AbstractMatrix(const AbstractMatrix<U> &sourceMatrix) : AbstractMatrix() {
         set(sourceMatrix);
     }
 
-   private:
-    void clean() {
-        for (int currentRow = 0; currentRow < rows; currentRow++)
-            delete[] matrix[currentRow];
-        delete[] matrix;
-    }
-
    public:
-    ~Matrix() {
-        numberOfMatrixes--;
-        clean();
+    virtual ~AbstractMatrix() = default;
+    virtual int getColumnsNumber() = 0;
+    virtual int getRowsNumber() = 0;
+    void fill(int currentRow, int currentColumn, U value) {
+        this->matrix[currentRow][currentColumn] = value;
     }
+    virtual U &operator()(int currentRow, int currentColumn) = 0;
+    virtual AbstractMatrix<U> &operator=(const AbstractMatrix<U> &copyMatrix) = 0;
 
-    int getColumnsNumber() {
-        return columns;
-    }
-
-    int getRowsNumber() {
-        return rows;
-    }
-
-    void fill(int currentRow, int currentColumn, T value) {
-        matrix[currentRow][currentColumn] = value;
-    }
-
-    T &operator()(int currentRow, int currentColumn) {
-        return matrix[currentRow][currentColumn];
-    }
-
-    Matrix<T> &operator=(const Matrix<T> &copyMatrix) {
-        clean();
-        set(copyMatrix);
-        return *this;
-    }
-
-    friend ostream &operator<<(ostream &currentStream, const Matrix<T> &currentMatrix) {
+    friend ostream &operator<<(ostream &currentStream, const AbstractMatrix<U> &currentMatrix) {
         for (int currentRow = 0; currentRow < currentMatrix.rows; currentRow++) {
             for (int currentColumn = 0; currentColumn < currentMatrix.columns; currentColumn++)
                 currentStream << currentMatrix.matrix[currentRow][currentColumn] << ' ';
@@ -87,26 +68,61 @@ class Matrix {
         }
         return currentStream;
     }
+};
+
+template <typename T>
+class Matrix : public AbstractMatrix<T> {
+   public:
+    Matrix() : AbstractMatrix<T>() {
+    }
+    Matrix(int inputRows, int inputColumns) : AbstractMatrix<T>(inputRows, inputColumns) {
+    }
+    Matrix(const Matrix<T> &sourceMatrix) : AbstractMatrix<T>(sourceMatrix) {
+    }
+
+   public:
+    ~Matrix() override {
+        this->numberOfMatrixes--;
+        this->clean();
+    }
+
+    int getColumnsNumber() {
+        return this->columns;
+    }
+
+    int getRowsNumber() {
+        return this->rows;
+    }
+
+    T &operator()(int currentRow, int currentColumn) {
+        return this->matrix[currentRow][currentColumn];
+    }
+
+    AbstractMatrix<T> &operator=(const AbstractMatrix<T> &copyMatrix) {
+        this->clean();
+        this->set(copyMatrix);
+        return *this;
+    }
 
     static int getNumberOfMatrixes() {
-        return numberOfMatrixes;
+        return AbstractMatrix<T>::numberOfMatrixes;
     }
 
     Matrix<T> &operator*(const int value) {
         Matrix<T> *newMatrix = new Matrix(*this);
-        for (int currentRow = 0; currentRow < rows; currentRow++)
-            for (int currentColumn = 0; currentColumn < columns; currentColumn++)
+        for (int currentRow = 0; currentRow < this->rows; currentRow++)
+            for (int currentColumn = 0; currentColumn < this->columns; currentColumn++)
                 newMatrix->fill(currentRow, currentColumn, (*newMatrix)(currentRow, currentColumn) * value);
         return *newMatrix;
     }
 
     Matrix<T> &operator*(const Matrix<T> anotherMatrix) {
-        Matrix<T> *newMatrix = new Matrix(rows, anotherMatrix.columns);
+        Matrix<T> *newMatrix = new Matrix(this->rows, anotherMatrix.columns);
 
-        for (int currentRow = 0; currentRow < rows; currentRow++) {
+        for (int currentRow = 0; currentRow < this->rows; currentRow++) {
             for (int anotherColumn = 0; anotherColumn < anotherMatrix.columns; anotherColumn++) {
-                for (int currentColumn = 0; currentColumn < columns; currentColumn++)
-                    newMatrix->matrix[currentRow][anotherColumn] += matrix[currentRow][currentColumn] * anotherMatrix.matrix[currentColumn][anotherColumn];
+                for (int currentColumn = 0; currentColumn < this->columns; currentColumn++)
+                    newMatrix->matrix[currentRow][anotherColumn] += this->matrix[currentRow][currentColumn] * anotherMatrix.matrix[currentColumn][anotherColumn];
             }
         }
         return *newMatrix;
@@ -114,7 +130,7 @@ class Matrix {
 };
 
 template <typename T>
-int Matrix<T>::numberOfMatrixes = 0;
+int AbstractMatrix<T>::numberOfMatrixes = 0;
 
 int main() {
     int rows = 2;
