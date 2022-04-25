@@ -1,0 +1,12 @@
+program {
+  int a;
+  int b = 404;
+  real c = 10.12;
+  string str = "hello world";
+  a = 123;
+  while (a != b) {
+    write(a, b);
+    a = a - 1;
+    c = c + 5.0;
+  }
+}@
