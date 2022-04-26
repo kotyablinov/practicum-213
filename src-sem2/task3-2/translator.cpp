@@ -196,13 +196,13 @@ Lex Scanner::get_lex() {
                 }
                 break;
             case REAL:
-                if ( isdigit (c) ) {
-                    fractionalN = fractionalN + ( c - '0' )*pow(0.1,powOfN);
+                if (isdigit (c)) {
+                    fractionalN = fractionalN + (c - '0')*pow(0.1,powOfN);
                     powOfN++;
                 }
                 else {
-                    ungetc ( c, fp );
-                    return Lex ( LEX_NUMREAL, to_string(fractionalN));
+                    ungetc (c, fp);
+                    return Lex (LEX_NUMREAL, to_string(fractionalN));
                 }
                 break;
             case NUMB:
@@ -250,7 +250,7 @@ Lex Scanner::get_lex() {
 ////////////////////////////////////////////
 
 template <class T, class T_EL>
-void from_st ( T & st, T_EL & i ) {
+void from_st (T & st, T_EL & i) {
     i = st.top(); st.pop();
 }
  
@@ -270,7 +270,7 @@ class Parser {
     void  E1();
     void  T();
     void  F();
-    void  dec ( type_of_lex type);
+    void  dec (type_of_lex type);
     void  check_id ();
     void  check_op ();
     void  check_not ();
@@ -284,7 +284,7 @@ class Parser {
     }
 public:
     vector <Lex> poliz;
-    Parser ( const char *program ) : scan (program) { }
+    Parser (const char *program) : scan (program) { }
     void  analyze();
 };
  
@@ -293,23 +293,23 @@ void Parser::analyze () {
     P ();
     if (c_type != LEX_FIN)
         throw curr_lex;
-    for ( Lex l : poliz ) 
+    for (Lex l : poliz) 
         cout << l;
     cout << endl << "Yes!!!" << endl;
 }
 
 void Parser::P () {
-    if ( c_type == LEX_PROGRAM ) {
+    if (c_type == LEX_PROGRAM) {
         gl ();
     }
     else 
         throw curr_lex; 
-    if ( c_type == LEX_LFG ) { 
+    if (c_type == LEX_LFG) { 
         gl ();
         D();
         B1();
-        if ( c_type == LEX_RFG ) {
-            gl ();
+        if (c_type == LEX_RFG) {
+            gl();
         }
         else {
             throw curr_lex;
@@ -319,9 +319,9 @@ void Parser::P () {
         throw curr_lex;
 }
 
-void Parser::D () {
+void Parser::D() {
     type_of_lex line_type;
-    while ( c_type == LEX_REAL || c_type == LEX_INT || c_type == LEX_STRING ) {
+    while (c_type == LEX_REAL || c_type == LEX_INT || c_type == LEX_STRING) {
         if (c_type == LEX_REAL){
             line_type = LEX_REAL;
             gl();
@@ -332,76 +332,76 @@ void Parser::D () {
             line_type = LEX_STRING;
             gl();
         }
-        if ( c_type != LEX_ID )
+        if (c_type != LEX_ID)
             throw curr_lex;
         else {
-            st_string.push ( c_val );
+            st_string.push (c_val);
 
             dec (line_type);
-            check_id ();
-            poliz.push_back (Lex ( POLIZ_ADDRESS, c_val ) );
+            check_id();
+            poliz.push_back (Lex (POLIZ_ADDRESS, c_val));
             gl ();
-            if ( c_type == LEX_ASSIGN ) {
+            if (c_type == LEX_ASSIGN) {
                 gl ();
                 E ();
                 eq_type ();
-                poliz.push_back ( Lex ( LEX_ASSIGN ) );
+                poliz.push_back(Lex(LEX_ASSIGN));
             } else {
                 st_lex.top();
                 poliz.pop_back();
             }
 
-            while ( c_type == LEX_COMMA) {
+            while (c_type == LEX_COMMA) {
                 gl ();
-                if ( c_type != LEX_ID)
+                if (c_type != LEX_ID)
                     throw curr_lex;
                 else {
                     st_string.push ( c_val );
                     dec (line_type);
                     check_id ();
-                    poliz.push_back (Lex ( POLIZ_ADDRESS, c_val ) );
-                    gl ();
-                    if ( c_type == LEX_ASSIGN ) {
-                        gl ();
-                        E ();
-                        eq_type ();
-                        poliz.push_back ( Lex ( LEX_ASSIGN ) );
+                    poliz.push_back (Lex (POLIZ_ADDRESS, c_val));
+                    gl();
+                    if (c_type == LEX_ASSIGN) {
+                        gl();
+                        E();
+                        eq_type();
+                        poliz.push_back(Lex(LEX_ASSIGN));
                     } else {
                         st_lex.top();
                         poliz.pop_back();
                     }
                 }
             }
-            if ( c_type != LEX_SEMICOLON )
+            if (c_type != LEX_SEMICOLON)
                 throw curr_lex;
             else {
-                dec (line_type);
-                gl ();
+                dec(line_type);
+                gl();
             } 
         }
     }
 }
 
-void Parser::B1 () {
+void Parser::B1() {
     S ();
-    while ( c_type == LEX_SEMICOLON ) {
-        gl ();
+    while (c_type == LEX_SEMICOLON) {
+        gl();
         if (c_type == LEX_RFG) break;
-        S ();
+        S();
     } 
 }
 
 void Parser::B () {
-    if ( c_type == LEX_LFG ) {
-        gl ();
-        S ();
-        while ( c_type == LEX_SEMICOLON ) {
-            gl ();
+    if (c_type == LEX_LFG) {
+        gl();
+        S();
+        while (c_type == LEX_SEMICOLON) {
+            gl();
             if (c_type == LEX_RFG) break;
-            S ();
+            S();
         }
-        if ( c_type == LEX_RFG ) {
-            gl ();
+        if (c_type == LEX_RFG) {
+            gl();
         }
         else {
             throw curr_lex;
@@ -411,62 +411,62 @@ void Parser::B () {
         throw curr_lex;
 }
 
-void Parser::S () {
+void Parser::S() {
     int pl0, pl1, pl2, pl3, pl4, pl5;
     vector <Lex> name_ptr;
     vector <int> addr_ptr;
     Lex point;
-    if ( c_type == LEX_IF ) {
+    if (c_type == LEX_IF) {
         //условие
-        gl ();
-        E ();
-        eq_bool ();
+        gl();
+        E();
+        eq_bool();
         pl2 = poliz.size();
-        poliz.push_back ( Lex() );
-        poliz.push_back ( Lex(POLIZ_FGO) );
+        poliz.push_back(Lex());
+        poliz.push_back(Lex(POLIZ_FGO));
         //то
-        S ();
+        S();
         pl3 = poliz.size ();
-        poliz.push_back ( Lex () );
-        poliz.push_back ( Lex ( POLIZ_GO ) );
-        poliz[pl2] = Lex ( POLIZ_LABEL, to_string(poliz.size()));
+        poliz.push_back(Lex());
+        poliz.push_back(Lex(POLIZ_GO));
+        poliz[pl2] = Lex(POLIZ_LABEL, to_string(poliz.size()));
         //иначе
-        if ( c_type == LEX_ELSE ) {
-            gl ();
-            S ();
-            poliz[pl3] = Lex ( POLIZ_LABEL, to_string(poliz.size()) );
+        if (c_type == LEX_ELSE) {
+            gl();
+            S();
+            poliz[pl3] = Lex(POLIZ_LABEL, to_string(poliz.size()));
         }
         else
             throw curr_lex;
     }//end if
     else if (c_type == LEX_DO) {
-        pl0 = poliz.size ();
-        pl1 = poliz.size ();
-        poliz.push_back ( Lex ( POLIZ_GO) );
+        pl0 = poliz.size();
+        pl1 = poliz.size();
+        poliz.push_back(Lex(POLIZ_GO));
         gl();
         S();
-        poliz.push_back ( Lex ( POLIZ_LABEL, to_string(pl0 )) );
-        poliz[pl1] = Lex ( POLIZ_LABEL, to_string(poliz.size()) );
+        poliz.push_back(Lex(POLIZ_LABEL, to_string(pl0)));
+        poliz[pl1] = Lex(POLIZ_LABEL, to_string(poliz.size()));
         if (c_type == LEX_WHILE) {
             pl0 = poliz.size ();
-            gl ();
-            E ();
-            eq_bool ();
-            pl1 = poliz.size (); 
-            poliz.push_back ( Lex () );
-            poliz.push_back ( Lex (POLIZ_FGO) );
+            gl();
+            E();
+            eq_bool();
+            pl1 = poliz.size(); 
+            poliz.push_back(Lex());
+            poliz.push_back(Lex(POLIZ_FGO));
         }
     else
         throw curr_lex;
     }//end do while
-    else if ( c_type == LEX_WHILE ) {
-        pl0 = poliz.size ();
-        gl ();
-        E ();
-        eq_bool ();
-        pl1 = poliz.size (); 
-        poliz.push_back ( Lex () );
-        poliz.push_back ( Lex (POLIZ_FGO) );
+    else if (c_type == LEX_WHILE) {
+        pl0 = poliz.size();
+        gl();
+        E();
+        eq_bool();
+        pl1 = poliz.size(); 
+        poliz.push_back(Lex());
+        poliz.push_back(Lex(POLIZ_FGO));
         
         S();
         poliz.push_back ( Lex ( POLIZ_LABEL, to_string(pl0 ) ) );
