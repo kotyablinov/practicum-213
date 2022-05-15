@@ -1,0 +1,14 @@
+program {
+  int a, b = 404;
+  real c = 10.12;
+  string str = "hello world";
+  a = 123;
+  while (a != b) {
+    write(a, b);
+    a = a - 1;
+    c = c + 5;
+    str = str + "uyuu";
+    break;
+  };
+  if (a < b) {str = " 00 0";  a = a - 1;} else a = a - 1;
+}@
