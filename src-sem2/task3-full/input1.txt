@@ -1,0 +1,19 @@
+program {
+  int a, b = 400;
+  string str = "hello world";
+  a = 407;
+  str = str + "uyuu";
+  write(str);
+  while (a != b) {
+    write(a, " ", b);
+    a = a - 1;
+    if (a != 402) str = str + "u" else break;
+  };
+  write("without break");
+  a = 407;
+  while (a != b) {
+    write(a, " ", b);
+    a = a - 1;
+  };
+  if((a + b < 600) and (b > 300)) write("Hi") else write("Bye");
+}@
